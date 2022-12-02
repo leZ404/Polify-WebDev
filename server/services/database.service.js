@@ -7,7 +7,12 @@ class DatabaseService {
    * @param {string} collectionName nom de la collection sur MongoDB
    * @param {Array} data tableau contenant les documents à mettre dans la collection
    */
-  async populateDb (collectionName, data) {}
+  async populateDb (collectionName, data) {
+    const collection = this.client.db(DB_CONSTS.DB_DB).collection(collectionName);
+     if((await (collection.find({}).toArray())).length === 0){
+      await this.client.db(DB_CONSTS.DB_DB).collection(collectionName).insertMany(data);
+    }
+  }
 
   // Méthode pour établir la connection entre le serveur Express et la base de données MongoDB
   async connectToServer (uri) {
