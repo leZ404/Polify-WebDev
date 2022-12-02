@@ -22,7 +22,8 @@ class PlaylistService {
    * @returns {Promise<Array>} la liste de toutes les playlists
    */
   async getAllPlaylists () {
-    return [];
+    const playlists = await this.collection.find().toArray();
+    return playlists;
   }
 
   /**
@@ -32,7 +33,8 @@ class PlaylistService {
    * @returns Retourne la playlist en fonction de son id
    */
   async getPlaylistById (id) {
-    return { id: -1 };
+    const playlists = await this.collection.findOne({id});
+    return playlists;
   }
 
   /**
@@ -44,7 +46,8 @@ class PlaylistService {
   async addPlaylist (playlist) {
     playlist.id = randomUUID();
     await this.savePlaylistThumbnail(playlist);
-    return playlist;
+    const playlists = await this.collection.insertOne(playlist);
+    return playlists;
   }
 
   /**
@@ -55,7 +58,15 @@ class PlaylistService {
   async updatePlaylist (playlist) {
     delete playlist._id; // _id est immutable
     await this.savePlaylistThumbnail(playlist);
+    await this.collection.findOneAndUpdate(
+      { id: playlist.id }, 
+      { $set:{name:playlist.name,
+         description:playlist.description,
+         thumbnail:playlist.thumbnail
+         ,songs:playlist.songs} 
+        });
   }
+  
 
   /**
    * Extrait le type d'image d'une notation base64 d'une image
@@ -122,7 +133,10 @@ class PlaylistService {
    * @returns toutes les playlists qui ont le mot clé cherché dans leur contenu (name, description)
    */
   async search (substring, exact) {
-    const filter = { name: { $regex: `${substring}`, $options: "i" } };
+    const filter = exact ? 
+    { $or: [{name: { $regex: `${substring}`} },
+     {description: { $regex: `${substring}`} }]} : { $or: [{name: { $regex: `${substring}`, $options: "i"}},
+      {description: { $regex: `${substring}`, $options: "i" }}]};
     const playlists = await this.collection.find(filter).toArray();
     return playlists;
   }
