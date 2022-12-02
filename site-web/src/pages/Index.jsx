@@ -40,6 +40,7 @@ export default function Index() {
     <>
       <main id="main-area" className="flex-column">
         {/*TODO : ajouter la barre de recherche*/}
+        <SearchBar handleSearch={handleSearch} />
         <div id="playlist-list">
           <h1>Mes Playlists</h1>
           <section id="playlist-container" className="playlist-container">
