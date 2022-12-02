@@ -22,7 +22,8 @@ class SongService {
    * @returns {Promise<Array>}
    */
   async getAllSongs () {
-    return [];
+    const songs = await this.collection.find().toArray();
+    return songs;
   }
 
   /**
@@ -33,7 +34,8 @@ class SongService {
    * @returns chanson correspondant à l'id
    */
   async getSongById (id) {
-    return { id: -1 };
+    const song = await this.collection.findOne({ id });
+    return song;
   }
 
   /**
@@ -44,7 +46,9 @@ class SongService {
    * @returns {boolean} le nouveau état aimé de la chanson
    */
   async updateSongLike (id) {
-    return false;
+    const song = await this.getSongById(id);
+    this.collection.updateOne({ id: song.id }, { $set: { liked: !song.liked } });
+    return song.liked;
   }
 
   /**
@@ -58,8 +62,10 @@ class SongService {
    * @returns toutes les chansons qui ont le mot clé cherché dans leur contenu (name, artist, genre)
    */
   async search (substring, exact) {
-    const filter = { name: { $regex: `${substring}`, $options: "i" } };
-    const songs = await this.collection.find(filter).toArray();
+    const regularExpression = exact
+      ? new RegExp(substring)
+      : new RegExp(substring, "i");
+    const songs = await this.collection.find({ $or: [{ name: regularExpression }, { artist: regularExpression }, { genre: regularExpression }] }).toArray();
     return songs;
   }
 

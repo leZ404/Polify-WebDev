@@ -33,8 +33,8 @@ class PlaylistService {
    * @returns Retourne la playlist en fonction de son id
    */
   async getPlaylistById (id) {
-    const playlists = await this.collection.findOne({ id });
-    return playlists;
+    const playlist = await this.collection.findOne({ id });
+    return playlist;
   }
 
   /**
