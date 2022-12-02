@@ -31,6 +31,8 @@ app.use("/api/search", searchBarRouter.router);
 const server = app.listen(PORT, () => {
   dbService.connectToServer(DB_CONSTS.DB_URL).then(() => {
     // TODO : populer la BD avec les valeurs par défaut
+    playlistsRouter.playlistService.populateDb();
+    songsRouter.songService.populateDb();
     // eslint-disable-next-line no-console
     console.log(`Listening on port ${PORT}.`);
   });

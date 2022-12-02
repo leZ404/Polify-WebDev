@@ -46,6 +46,7 @@ class SongService {
    * @returns {boolean} le nouveau état aimé de la chanson
    */
   async updateSongLike (id) {
+    id = parseInt(id);
     const song = await this.getSongById(id);
     this.collection.updateOne({ id: song.id }, { $set: { liked: !song.liked } });
     return song.liked;
