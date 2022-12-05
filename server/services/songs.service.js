@@ -66,7 +66,10 @@ class SongService {
     const regularExpression = exact
       ? new RegExp(substring)
       : new RegExp(substring, "i");
-    const songs = await this.collection.find({ $or: [{ name: regularExpression }, { artist: regularExpression }, { genre: regularExpression }] }).toArray();
+    const name = { name: regularExpression }
+    const artist = { artist: regularExpression }
+    const genre = { genre: regularExpression }
+    const songs = await this.collection.find({ $or: [name, artist, genre] }).toArray();
     return songs;
   }
 
